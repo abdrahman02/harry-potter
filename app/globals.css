@@ -1,26 +1,44 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --house-primary: #1f2937;
+  --house-accent: #6b7280;
+}
+
+[data-house="gryffindor"] {
+  --house-primary: #740001;
+  --house-accent: #d3a625;
+}
+
+[data-house="slytherin"] {
+  --house-primary: #1a472a;
+  --house-accent: #aaaaaa;
+}
+
+[data-house="ravenclaw"] {
+  --house-primary: #0e1a40;
+  --house-accent: #946b2d;
+}
+
+[data-house="hufflepuff"] {
+  --house-primary: #ecb939;
+  --house-accent: #372e29;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out both;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
