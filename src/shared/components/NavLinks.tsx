@@ -2,21 +2,20 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { Users, Sparkles } from "lucide-react"
 import { cn } from "@src/shared/utils/cn"
 
 const LINKS = [
-  { href: "/", label: "Characters" },
-  { href: "/spells", label: "Spells" },
+  { href: "/", label: "Characters", Icon: Users },
+  { href: "/spells", label: "Spells", Icon: Sparkles },
 ]
 
 export function NavLinks() {
   const pathname = usePathname()
 
   return (
-    <div className="flex items-center gap-1">
-      {LINKS.map(({ href, label }) => {
-        // Characters is active on "/" or any "/character*" path
-        // Spells is active on any "/spells*" path
+    <div className="flex items-stretch gap-1">
+      {LINKS.map(({ href, label, Icon }) => {
         const isActive =
           href === "/"
             ? pathname === "/" || pathname.startsWith("/character")
@@ -27,12 +26,13 @@ export function NavLinks() {
             key={href}
             href={href}
             className={cn(
-              "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              "flex items-center gap-2 border-b-2 px-3 py-4 text-sm font-semibold transition-colors",
               isActive
-                ? "bg-gray-100 text-gray-900"
-                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+                ? "border-gray-900 text-gray-900"
+                : "border-transparent text-gray-400 hover:border-gray-300 hover:text-gray-700",
             )}
           >
+            <Icon size={16} />
             {label}
           </Link>
         )
