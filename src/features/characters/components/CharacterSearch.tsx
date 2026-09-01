@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
+import { Search } from "lucide-react"
 import { useDebounce } from "@src/shared/hooks/useDebounce"
 
 interface CharacterSearchProps {
@@ -21,20 +22,17 @@ export function CharacterSearch({ defaultValue }: CharacterSearchProps) {
     } else {
       params.delete("q")
     }
-    // Reset pagination when the search query changes.
-    params.delete("page")
     router.push(`/?${params.toString()}`)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue])
 
   return (
     <div className="relative">
-      <span
+      <Search
+        size={15}
         className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
         aria-hidden="true"
-      >
-        🔍
-      </span>
+      />
       <input
         type="search"
         value={value}

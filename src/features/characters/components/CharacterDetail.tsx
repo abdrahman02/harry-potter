@@ -1,5 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
+import { ArrowLeft, User } from "lucide-react"
 import type { Character } from "@src/features/characters/types"
 
 interface CharacterDetailProps {
@@ -42,9 +43,10 @@ export function CharacterDetail({ character }: CharacterDetailProps) {
       <div>
         <Link
           href="/"
-          className="inline-flex items-center gap-1 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
         >
-          ← Back to Characters
+          <ArrowLeft size={15} />
+          Back to Characters
         </Link>
       </div>
 
@@ -62,10 +64,10 @@ export function CharacterDetail({ character }: CharacterDetailProps) {
             />
           ) : (
             <div
-              className="flex h-full w-full items-center justify-center text-7xl text-gray-300"
+              className="flex h-full w-full items-center justify-center text-gray-200"
               aria-hidden="true"
             >
-              🧙
+              <User size={80} strokeWidth={1} />
             </div>
           )}
         </div>
