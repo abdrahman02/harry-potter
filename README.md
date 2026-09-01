@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Harry Potter Explorer
 
-## Getting Started
+Aplikasi web untuk menjelajahi dunia sihir — karakter, rumah, dan mantra dari semesta Harry Potter.
 
-First, run the development server:
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router, React Server Components)
+- **Styling**: TailwindCSS v4
+- **Icons**: Lucide React
+- **Language**: TypeScript (strict mode)
+- **Data**: [HP API](https://hp-api.onrender.com) via native `fetch()` dengan ISR revalidation
+
+## Features
+
+- Browse karakter dengan bento card grid (image full-bleed + hover overlay)
+- Filter karakter berdasarkan rumah (Gryffindor, Slytherin, Ravenclaw, Hufflepuff)
+- Search karakter berdasarkan nama (debounced 300ms)
+- Load More tanpa kehilangan data sebelumnya
+- House color themes (CSS custom properties berubah sesuai rumah aktif)
+- Halaman detail karakter (patronus, wand, actor, ancestry, dll.)
+- Browse mantra secara alfabetis
+- Loading skeleton + error boundary per route
+- Animasi fade-in dan hover transitions
+
+## Setup
+
+### 1. Clone & install dependencies
+
+```bash
+git clone <repo-url>
+cd harry-potter-explorer
+npm install
+```
+
+### 2. Konfigurasi environment
+
+Buat file `.env.local` di root project:
+
+```bash
+cp .env.example .env.local
+```
+
+Isi nilai berikut di `.env.local`:
+
+```env
+NEXT_PUBLIC_HP_API_URL=https://hp-api.onrender.com
+```
+
+### 3. Jalankan dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3000](http://localhost:3000) di browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Jalankan development server (Turbopack) |
+| `npm run build` | Build untuk production |
+| `npm run start` | Jalankan production server |
+| `npm run lint` | Jalankan ESLint |
 
-## Learn More
+## Struktur Proyek
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── constants/          # Konstanta (house colors)
+├── features/
+│   ├── characters/     # Komponen, service, dan types karakter
+│   └── spells/         # Komponen, service, dan types mantra
+├── lib/                # HP API client (hpFetch)
+├── shared/
+│   ├── components/     # Komponen reusable (Navbar, SkeletonCard, dll.)
+│   ├── hooks/          # Custom hooks (useDebounce)
+│   └── utils/          # Utilities (cn)
+└── types/              # Shared types
+app/
+├── character/[id]/     # Halaman detail karakter
+├── spells/             # Halaman daftar mantra
+├── layout.tsx          # Root layout + Navbar
+└── page.tsx            # Halaman utama (daftar karakter)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deploy ke [Vercel](https://vercel.com) dengan menambahkan environment variable `NEXT_PUBLIC_HP_API_URL` di project settings.
