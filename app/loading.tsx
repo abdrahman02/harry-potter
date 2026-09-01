@@ -1,5 +1,7 @@
 import { SkeletonCard } from "@src/shared/components/SkeletonCard"
 
+type CardPattern = "0" | "1" | "2" | "3" | "4" | "5"
+
 export default function Loading() {
   return (
     <div className="flex flex-col gap-6">
@@ -10,12 +12,18 @@ export default function Loading() {
       </div>
 
       {/* Filter/search bar placeholder */}
-      <div className="h-9 w-80 animate-pulse rounded-lg bg-gray-200" />
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
+        <div className="h-9 w-72 animate-pulse rounded-full bg-gray-200" />
+        <div className="h-9 w-48 animate-pulse rounded-lg bg-gray-200" />
+      </div>
 
-      {/* Character grid skeleton — 20 cards matching PAGE_SIZE */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <SkeletonCard key={i} />
+      {/* Bento grid skeleton — mirrors the 0-5 cycling pattern */}
+      <div
+        className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4"
+        style={{ gridAutoRows: "240px", gridAutoFlow: "dense" }}
+      >
+        {Array.from({ length: 18 }).map((_, i) => (
+          <SkeletonCard key={i} pattern={String(i % 6) as CardPattern} />
         ))}
       </div>
     </div>

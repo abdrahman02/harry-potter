@@ -1,66 +1,143 @@
 import Image from "next/image"
 import Link from "next/link"
+import { ArrowRight, User } from "lucide-react"
 import type { Character } from "@src/features/characters/types"
 import { cn } from "@src/shared/utils/cn"
 
-interface CharacterCardProps {
-  character: Character
+export type CardPattern = "0" | "1" | "2" | "3" | "4" | "5"
+
+const CARD_SPAN: Record<CardPattern, string> = {
+  "0": "col-span-1 row-span-2 md:col-span-2", // 2×2 featured
+  "1": "col-span-1 row-span-1",                // 1×1 small
+  "2": "col-span-1 row-span-1",                // 1×1 small
+  "3": "col-span-1 row-span-1 md:col-span-2",  // 2×1 wide
+  "4": "col-span-1 row-span-2",                // 1×2 tall
+  "5": "col-span-1 row-span-1",                // 1×1 small
 }
 
-export function CharacterCard({ character }: CharacterCardProps) {
+const TITLE_SIZE: Record<CardPattern, string> = {
+  "0": "text-xl md:text-2xl lg:text-3xl",
+  "1": "text-sm md:text-base",
+  "2": "text-sm md:text-base",
+  "3": "text-lg md:text-xl",
+  "4": "text-sm md:text-base",
+  "5": "text-sm md:text-base",
+}
+
+function resolveImageSizes(pattern: CardPattern): string {
+  const isWide = pattern === "0" || pattern === "3"
+  return isWide
+    ? "(max-width: 767px) 100vw, (max-width: 1023px) 67vw, 50vw"
+    : "(max-width: 767px) 100vw, (max-width: 1023px) 33vw, 25vw"
+}
+
+interface CharacterCardProps {
+  character: Character
+  pattern?: CardPattern
+  priority?: boolean
+}
+
+export function CharacterCard({ character, pattern = "1", priority = false }: CharacterCardProps) {
+  const isFeatured = pattern === "0"
+  const isWide = pattern === "0" || pattern === "3"
+
+  const subInfo = [
+    character.species,
+    character.gender,
+    character.actor ? `Played by ${character.actor}` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ")
+
   return (
-    <Link
-      href={`/character/${character.id}`}
+    <article
       className={cn(
-        "group flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white",
-        "transition-all duration-200 hover:-translate-y-1 hover:shadow-lg",
-        "focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
+        "group/card relative overflow-hidden rounded-2xl border border-black/5 bg-gray-100",
+        "shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl",
+        "focus-within:ring-2 focus-within:ring-gray-900 focus-within:ring-offset-2",
+        CARD_SPAN[pattern],
       )}
     >
-      {/* Image area — square aspect ratio */}
-      <div className="relative aspect-square overflow-hidden bg-gray-100">
-        {character.image ? (
-          <Image
-            src={character.image}
-            alt={character.name}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+      {/* Full-bleed background image */}
+      {character.image ? (
+        <Image
+          src={character.image}
+          alt={character.name}
+          fill
+          className="object-cover object-top transition-transform duration-700 ease-out group-hover/card:scale-105"
+          sizes={resolveImageSizes(pattern)}
+          priority={priority}
+        />
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+          <User
+            size={isFeatured ? 80 : 48}
+            strokeWidth={1}
+            className="text-gray-300"
           />
-        ) : (
-          <div
-            className="flex h-full w-full items-center justify-center text-5xl text-gray-300"
-            aria-hidden="true"
-          >
-            🧙
-          </div>
+        </div>
+      )}
+
+      {/* Gradient overlay — always visible, darkens on hover */}
+      <div
+        className={cn(
+          "absolute inset-0 flex flex-col justify-end p-4 md:p-5",
+          "bg-gradient-to-t from-slate-950/90 via-slate-950/25 to-transparent",
+          "transition-colors duration-300 ease-out",
+          "group-hover/card:from-slate-950/95 group-hover/card:via-slate-950/45",
         )}
-      </div>
+      >
+        {/* Full-card link sits in the overlay */}
+        <Link
+          href={`/character/${character.id}`}
+          className="absolute inset-0 z-10"
+          aria-label={`View ${character.name}`}
+        />
 
-      {/* Card body */}
-      <div className="flex flex-1 flex-col gap-1 p-3">
-        <h3 className="line-clamp-1 text-sm font-semibold text-gray-900">
-          {character.name}
-        </h3>
-
-        {/* House badge — only rendered when house is truthy */}
+        {/* House badge */}
         {character.house && (
           <span
-            className="inline-block w-fit rounded-full px-2 py-0.5 text-xs font-medium"
-            style={{
-              backgroundColor: "color-mix(in srgb, var(--house-primary) 15%, white)",
-              color: "var(--house-primary)",
-            }}
+            className="relative z-20 mb-2 w-fit rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white"
+            style={{ backgroundColor: "var(--house-primary)" }}
           >
             {character.house}
           </span>
         )}
 
-        {/* Species + gender */}
-        <p className="text-xs capitalize text-gray-500">
-          {[character.species, character.gender].filter(Boolean).join(" · ")}
-        </p>
+        {/* Character name */}
+        <h3
+          className={cn(
+            "relative z-20 mb-1 font-bold leading-tight text-white drop-shadow-lg",
+            "line-clamp-2 transition-colors duration-300",
+            TITLE_SIZE[pattern],
+          )}
+        >
+          {character.name}
+        </h3>
+
+        {/* Sub-info (species · gender · actor) — slides up on hover */}
+        {subInfo && (
+          <p
+            className={cn(
+              "relative z-20 max-h-0 overflow-hidden capitalize text-gray-300 opacity-0",
+              "transition-all duration-500 ease-out",
+              "group-hover/card:mb-1 group-hover/card:max-h-16 group-hover/card:opacity-100",
+              isWide ? "text-sm" : "text-xs",
+            )}
+          >
+            {subInfo}
+          </p>
+        )}
+
+        {/* "View Character" arrow — featured card only, on hover */}
+        {isFeatured && (
+          <div
+            className="relative z-20 flex items-center gap-1.5 text-sm font-semibold text-white opacity-0 transition-opacity duration-500 group-hover/card:opacity-100"
+          >
+            View Character <ArrowRight size={14} />
+          </div>
+        )}
       </div>
-    </Link>
+    </article>
   )
 }
